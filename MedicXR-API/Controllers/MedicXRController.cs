@@ -13,7 +13,7 @@ namespace MedicXR_API.Controllers
             _svc = svc;
         }
 
-        [Route("/getillnesses")]
+        [Route("getillnesses")]
         [HttpGet]
         public async Task<string> GetIllnesses()
         {
