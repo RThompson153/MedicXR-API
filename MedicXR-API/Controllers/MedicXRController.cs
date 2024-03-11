@@ -18,8 +18,16 @@ namespace MedicXR_API.Controllers
         [HttpGet]
         public async Task<string> GetIllnesses()
         {
-            var meh = await _svc.GetIllnesses();
-            return JsonSerializer.Serialize(meh);
+            try
+            {
+                return JsonSerializer.Serialize(await _svc.GetIllnesses());
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.InnerException?.Message ?? ex.Message);
+
+                return ex.InnerException?.Message ?? ex.Message;
+            }
         }
     }
 }
