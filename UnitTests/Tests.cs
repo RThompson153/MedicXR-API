@@ -23,5 +23,15 @@ namespace UnitTests
 
             Assert.Pass();
         }
+
+        [Test]
+        public async Task GetLiveIllnessesTest()
+        {
+            var httpClient = new HttpClient();
+
+            //var get = await httpClient.GetAsync("https://medicxr-api.azurewebsites.net/getillnesses");
+
+            Assert.Pass();
+        }
     }
 }
