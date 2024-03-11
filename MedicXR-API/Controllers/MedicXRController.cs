@@ -5,6 +5,7 @@ using System.Text.Json;
 namespace MedicXR_API.Controllers
 {
     [ApiController]
+    [Route("/")]
     public class MedicXRController : ControllerBase
     {
         private MedicXRService _svc;
