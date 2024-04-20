@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicXR_API.Context
 {
@@ -10,7 +11,12 @@ namespace MedicXR_API.Context
 			var type = typeof(T);
 
 			foreach (var prop in type.GetProperties())
+			{
 				builder.Property(prop.Name);
+
+				if (prop.GetCustomAttributes(typeof(NotMappedAttribute), false).Any())
+					builder.Ignore(prop.Name);
+			}
 		}
 	}
 }

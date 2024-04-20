@@ -1,33 +1,75 @@
 ﻿using MedicXR_API.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 using System.Text.Json;
 
 namespace MedicXR_API.Controllers
 {
-    [ApiController]
-    [Route("/")]
-    public class MedicXRController : ControllerBase
-    {
-        private MedicXRService _svc;
-        public MedicXRController(MedicXRService svc)
-        {
-            _svc = svc;
-        }
+	[ApiController]
+	[Route("/")]
+	public class MedicXRController : ControllerBase
+	{
+		private MedicXRService _svc;
+		private AthenaEMRService _athena;
+		protected internal IConfiguration Config;
+		protected internal readonly string Salt;
+		
+		public MedicXRController(IConfiguration config, MedicXRService svc, AthenaEMRService athena)
+		{
+			Salt = Convert.ToBase64String(Encoding.UTF8.GetBytes("medar")).Replace("=", "");
+			Config = config;
+			_svc = svc;
+			_athena = athena;
+		}
 
-        [Route("getillnesses")]
-        [HttpGet]
-        public async Task<string> GetIllnesses()
-        {
-            try
-            {
-                return JsonSerializer.Serialize(await _svc.GetIllnesses());
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.InnerException?.Message ?? ex.Message);
+		private string decode(string source) => Encoding.UTF8.GetString(Convert.FromBase64String(source));
 
-                return ex.InnerException?.Message ?? ex.Message;
-            }
-        }
-    }
+		[Route("authenticateathena")]
+		[HttpGet]
+		public async Task<string> AuthenticateAthena()
+		{
+			try
+			{
+				return JsonSerializer.Serialize(await _athena.Authenticate());
+			}
+			catch(Exception ex)
+			{
+				throw;
+			}
+		}
+
+		[Route("authenticateclient")]
+		[HttpGet]
+		public async Task<string> AuthenticateClient()
+		{
+			try
+			{
+				if (!Request.Headers.ContainsKey("ApiKey"))
+					throw new Exception("API Key not provided");
+				if (!Request.Headers.ContainsKey("Authorization"))
+					throw new Exception("Authorization not provided");
+				if (!Request.Headers.ContainsKey("ClientIp"))
+					throw new Exception("Client IP not provided");
+
+				string decoded = decode(Request.Headers["Authorization"]);
+
+				List<string> authorizationHeaders = decoded.Split(Salt).Where(d => !string.IsNullOrEmpty(d)).ToList();
+
+				_svc.ValidateApiKey(decode(Request.Headers["ApiKey"]));
+
+				return JsonSerializer.Serialize(await _svc.AuthenticateClient(decode(authorizationHeaders.FirstOrDefault()), decode(authorizationHeaders.LastOrDefault()), decode(Request.Headers["ClientIp"])));
+			}
+			catch(Exception ex)
+			{
+				throw;
+			}
+		}
+
+		[Route("updateclient")]
+		[HttpPut]
+		public async Task UpdateClient()
+		{
+			
+		}
+	}
 }

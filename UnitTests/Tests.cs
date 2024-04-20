@@ -1,36 +1,94 @@
 using MedicXR_API.Context;
+using MedicXR_API.Globals.Models;
 using MedicXR_API.Services;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
+using System.Security.Cryptography;
+using System.Net.Http.Headers;
+using MedicXR_API.Libraries;
 
 namespace UnitTests
 {
-    public class Tests
+	public class Tests
     {
         private MedicXRContext _ctx;
         private MedicXRService _svc;
+        private AthenaEMRService _athena;
+        private IConfiguration _config;
+        private string _clientId = "RGV2ZWxvcG1lbnQgQ2xpZW50";
+        private string _clientSecret = "F7CzIZPBYmQsDeQAVDxC-Gmt61pBvvF1XH4oPzwHrib5Tsh4_0BXESyDWdXdP5bcNSVs7DREGA2oHOzaEWHSGQ";
+
         [SetUp]
         public void Setup()
         {
+            _config = new ConfigurationBuilder().AddJsonFile("testsettings.json").AddEnvironmentVariables() 
+                 .Build();
             _ctx = new MedicXRContext("Server=tcp:medicxr.database.windows.net,1433;Initial Catalog=medicxr;Persist Security Info=False;User ID=medicxr;Password=&)(^4081RPT123cj;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-
-            _svc = new MedicXRService(_ctx);
+            _svc = new MedicXRService(_config);
+            _athena = new AthenaEMRService(_config, new HttpLibrary());
         }
 
         [Test]
-        public async Task GetIllnessesTest()
+        public async Task AuthenticateAthenaTest()
         {
-            await _svc.GetIllnesses();
+            var authToken = await _athena.Authenticate();
 
             Assert.Pass();
         }
 
         [Test]
-        public async Task GetLiveIllnessesTest()
+        public async Task GetClientTest()
         {
-            var httpClient = new HttpClient();
+            await _svc.AuthenticateClient(_clientId, _clientSecret, "192.168.0.187");
 
-            var get = await httpClient.GetAsync("https://medicxr-api.azurewebsites.net/getillnesses");
+            Assert.Pass();
+        }
 
+        [Test]
+        public async Task GetAppointmentsTest()
+        {
+            var appointments = await _athena.GetAppointments(1128700, 1);
+
+            Assert.Pass();
+        }
+
+        [Test]
+        public async Task GetPatientTest()
+        {
+            await _athena.GetPatient(1128700, 11281);
+
+            Assert.Pass();
+        }
+
+        [Test]
+        public async Task GetConditionsTest()
+        {
+            await _athena.GetConditions();
+
+            Assert.Pass();
+        }        
+
+        [Test]
+        public void createapikey()
+        {
+            var rng = RandomNumberGenerator.Create();
+            var bytes = new byte[64];
+
+            rng.GetBytes(bytes);
+
+            var key = Convert.ToBase64String(bytes).Replace('+', '-').Replace('/', '_');
+            Assert.Pass();
+        }
+
+         [Test]
+        public void createclientkey()
+        {
+            var rng = RandomNumberGenerator.Create();
+            var bytes = new byte[128];
+
+            rng.GetBytes(bytes);
+
+            var key = Convert.ToBase64String(bytes);
             Assert.Pass();
         }
     }

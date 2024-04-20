@@ -2,9 +2,15 @@
 {
     internal static class SqlConstants
     {
-        internal const string Schema = "medar";
-        internal const string tbl_IllnessTable = "Illnesses";
-        internal const string tbl_SymptomTable = "Symptoms";
-        internal const string sp_GetIllnesses = "GetIllnesses";
+        internal const string DefaultSchema = "medxr";
+        internal const string MedARSchema = "medar";
+        internal const string EXEC = "EXEC";
+        internal const string P0 = "p0";
+        internal const string P1 = "p1";
+        internal const string P2 = "p2";
+
+        internal const string sp_GetClient = "GetClient @ClientId=@p0, @ClientSecret=@p1";
+        internal const string sp_GetUsers = "GetUsers @ClientId=@p0, @UserIds=@p1";
+        internal const string sp_GetIllnesses = "GetIllnesses @ClientId=@p0";
     }
 }

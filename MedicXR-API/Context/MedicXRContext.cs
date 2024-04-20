@@ -1,30 +1,36 @@
 ﻿using MedicXR_API.Context.Models;
+using MedicXR_API.Globals.Models;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Numerics;
+using System.Data;
 
 namespace MedicXR_API.Context
 {
-	public partial class MedicXRContext : DbContext
+    public partial class MedicXRContext : DbContext
 	{
 		private ModelBuilder _modelBuilder;
-		private string _schema;
+		public string Schema { get; set; }
 
+		internal protected virtual DbSet<Client> Client { get; set; }
+		internal protected virtual DbSet<User> Users { get; set; }
 		internal protected virtual DbSet<Illness> Illnesses { get; set; }
 
 		public MedicXRContext(DbContextOptions options) : base(options)
 		{
-			_schema = "medar";
+			Schema = SqlConstants.DefaultSchema;
 		}
 		public MedicXRContext(string ctx) : base(getOptions(ctx))
 		{
-			_schema = "medar";
+			Schema = SqlConstants.DefaultSchema;
 		}
 
 		protected override void OnModelCreating(ModelBuilder mb)
 		{
 			_modelBuilder = mb;
-			_modelBuilder.HasDefaultSchema(SqlConstants.Schema);
+			_modelBuilder.HasDefaultSchema(SqlConstants.DefaultSchema);
 
+			configureDbSet<Client>();
+			configureDbSet<User>();
 			configureDbSet<Illness>();
 		}
 
@@ -45,6 +51,30 @@ namespace MedicXR_API.Context
 			});
 		}
 
-		public async Task<IEnumerable<Illness>> GetIllnesses() => await Illnesses.FromSqlRaw($"EXEC {_schema}.{SqlConstants.sp_GetIllnesses}").ToListAsync();
+		public async Task<IEnumerable<Client>?> AuthenticateClient(string clientId, string clientSecret)
+		{
+			SqlParameter[] parameters = new SqlParameter[2]
+			{
+				clientId.ToSqlParam(SqlConstants.P0, SqlDbType.NVarChar),
+				clientSecret.ToSqlParam(SqlConstants.P1, SqlDbType.NVarChar)
+			};
+
+			var clients = await Client.FromSqlRaw($"{SqlConstants.EXEC} {Schema}.{SqlConstants.sp_GetClient}", parameters).ToListAsync();
+
+			return clients;
+		}
+
+		public async Task<IEnumerable<User>> GetUsers(string clientId, string userIds)
+		{
+			SqlParameter[] parameters = new SqlParameter[2]
+			{
+				clientId.ToSqlParam(SqlConstants.P0, SqlDbType.NVarChar),
+				userIds.ToSqlParam(SqlConstants.P1, SqlDbType.NVarChar),
+			};
+
+			return await Users.FromSqlRaw($"{SqlConstants.EXEC} {Schema}.{SqlConstants.sp_GetUsers}", parameters).ToListAsync();
+		}
+	
+		public async Task<IEnumerable<Illness>> GetIllnesses(string clientId) => await Illnesses.FromSqlRaw($"{SqlConstants.EXEC} {Schema}.{SqlConstants.sp_GetIllnesses}", clientId.ToSqlParam(SqlConstants.P0, SqlDbType.NVarChar)).ToListAsync();
 	}
 }

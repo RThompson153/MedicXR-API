@@ -1,19 +1,19 @@
-using MedicXR_API.Context;
-using MedicXR_API.GlobalConstants;
+using MedicXR_API.Libraries;
 using MedicXR_API.Services;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<MedicXRContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString(Constants.Database))
-);
+//builder.Services.AddDbContext<MedicXRContext>(options =>
+//    options.UseSqlServer(builder.Configuration.GetConnectionString(Constants.Database))
+//);
 
-builder.Services.AddScoped<MedicXRService>();
-builder.Services.AddControllers();
+builder.Services.AddSingleton<HttpLibrary>();
+builder.Services.AddSingleton<MedicXRService>();
+builder.Services.AddSingleton<AthenaEMRService>();
 
 var app = builder.Build();
 
@@ -24,9 +24,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 app.Run();

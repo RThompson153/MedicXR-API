@@ -1,0 +1,37 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "APIKey": "Pvsorr2EunNjdLfAdbriQbx27ANry6lx2c3SPG3DZTpe3BVLNHakZWhSpU-rVYxp4wVypWW6m0du-0EY05GYkg==",
+  "Environment": "development",
+  "ConnectionStrings": {
+    //"Database": "Server=tcp:medicxr.database.windows.net,1433;Initial Catalog=medicxr;Persist Security Info=False;User ID=medicxr;Password=&)(^4081RPT123cj;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+    "Database": "Data Source=localhost;Initial Catalog=MedicXR;Integrated Security=True;Encrypt=False;"
+  },
+  "AthenaEMR": {
+    "ClientId": "0oaodii4koJhF1HYE297",
+    "ClientSecret": "As2XvgBGePFSIcJpFl1Tfpu_UyF0t4yMWfmz5AyL56oSYDsImbjzTcoNidpCnPnG",
+    "GrantType": "client_credentials",
+    "Scopes": {
+      "Athena": "athena/service/Athenanet.MDP.*",
+      "Condition": "system/Condition.read"
+    },
+    "Services": {
+      "AuthorizationService": "oauth2/v1/",
+      "TokenService": "token",
+      "AppointmentsService": "v1/{practiceId}/appointments/booked?departmentid={departmentId}&startdate={startDate}&enddate={endDate}",
+      "PatientsService": "v1/{practiceId}/patients"
+    },
+    "BaseUrl": "https://api.preview.platform.athenahealth.com/",
+    "AuthorizationEndpoint": "oauth2/v1/",
+    "TokenEndpoint": "token",
+    "ChartEndpoint": "{practiceId}/chart/{patientId}/problems?departmentid={departmentId}",
+    "ConditionsEndpoint": "fhir/r4/Condition",
+    "AppointmentsEndpoint": "v1/{practiceId}/appointments/booked?departmentid={departmentId}&startdate={startDate}&enddate={endDate}",
+    "PatientEndpoint":  "v1/{practiceId}/patients"
+  }
+}
