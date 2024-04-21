@@ -2,6 +2,7 @@
 using MedicXR_API.Context;
 using MedicXR_API.Context.Models;
 using MedicXR_API.Globals.Models;
+using MedicXR_API.Services.Athena;
 using MedicXR_API.Services.Utils;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -12,20 +13,17 @@ namespace MedicXR_API.Services
     public class MedicXRService
 	{
 		private IConfiguration _config;
-		private TokenResponse _icdAuthToken;
-		protected internal MedicXRContext Ctx { get; set; }
-        private HttpClient _http { get; set; }
+		private readonly MedicXRContext _ctx;
+		private AthenaEMRService _athena;
 		
-		public MedicXRService(IConfiguration config)
+		public MedicXRService(IConfiguration config, AthenaEMRService athena)
 		{
 			_config = config;
-
-			Ctx = new MedicXRContext(config.GetConnectionString(Constants.Database));
+			_athena = athena;
+			_ctx = new MedicXRContext(config.GetConnectionString(MedicXRConstants.Database));
 		}
 
-		private async Task<IEnumerable<Client>> authenticateClient(string clientId, string clientSecret) => await Ctx.AuthenticateClient(clientId, clientSecret);
-		private async Task<IEnumerable<User>> getUsers(string clientId, string userIds) => await Ctx.GetUsers(clientId, userIds);
-		private async Task<IEnumerable<Illness>> getIllnesses(string clientId) => await Ctx.GetIllnesses(clientId);
+		private async Task<Client?> authenticateClient(string clientId, string clientSecret) => await _ctx.AuthenticateClient(clientId, clientSecret);
 
 		/// <summary>
 		/// Validates the client's API key
@@ -50,6 +48,8 @@ namespace MedicXR_API.Services
 			{
 				var client = await authenticateClient(clientId, clientSecret);
 
+				await _athena.GetProviders(client.PracticeId);
+
 				//if (client.Active != true && client.Registered == true)
 				//	throw new Exception("Client not active");
 
@@ -58,24 +58,7 @@ namespace MedicXR_API.Services
 
 				//client.Users = await getUsers(clientId, client.UserIds);
 
-				return client.FirstOrDefault();
-			}
-			catch(Exception ex)
-			{
-				throw;
-			}
-		}
-		/// <summary>
-		/// Retrieves the list of common illnesses
-		/// </summary>
-		/// <param name="clientId"></param>
-		/// <returns></returns>
-		public async Task<IEnumerable<Illness>> GetIllnesses(string clientId)
-		{
-			try
-			{
-				var illnesses = await getIllnesses(clientId);
-				return null;
+				return client;
 			}
 			catch(Exception ex)
 			{

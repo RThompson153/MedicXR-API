@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace MedicXR_API.Libraries
@@ -40,15 +41,8 @@ namespace MedicXR_API.Libraries
 			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(header.Key, header.Value);
 		}
 
-		private void setHttpContent(string content, HttpContentTypes contentType = HttpContentTypes.JSON)
-		{
-			
-		}
+		private FormUrlEncodedContent setHttpContent(Dictionary<string, string> content) => new(content);
 
-		private FormUrlEncodedContent setHttpContent(Dictionary<string, string> content, HttpContentTypes contentType = HttpContentTypes.FormEncoded)
-		{
-			return new FormUrlEncodedContent(content);
-		}
 
 		private void assertResponseException(HttpResponseMessage response)
 		{
@@ -75,8 +69,24 @@ namespace MedicXR_API.Libraries
 			}
 		}
 
-		//public async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string>? headers = null)
-		//{ }
+		public async Task<string> GetAsync(string url, Dictionary<string, string>? headers = null)
+		{
+			try
+			{
+				if (headers?.Any() == true)
+					setHttpHeaders(headers);
+
+				HttpResponseMessage response = await _httpClient.GetAsync(url);
+
+				assertResponseException(response);
+
+				return response.Content.ReadAsStringAsync().Result;
+			}
+			catch
+			{
+				throw;
+			}
+		}
 
 		public async Task<T> PostAsync<T>(string url, Dictionary<string, string> headers, Dictionary<string, string> content)
 		{
@@ -96,7 +106,22 @@ namespace MedicXR_API.Libraries
 			}
 		}
 
-		//public async Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> headers)
-		//{ }
+		public async Task<string> PostAsync(string url, Dictionary<string, string> headers, Dictionary<string, string> content)
+		{
+			try
+			{
+				setHttpHeaders(headers);
+
+				HttpResponseMessage response = await _httpClient.PostAsync(url, setHttpContent(content));
+
+				assertResponseException(response);
+
+				return response.Content.ReadAsStringAsync().Result;
+			}
+			catch
+			{
+				throw;
+			}
+		}
 	}
 }

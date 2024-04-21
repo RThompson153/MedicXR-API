@@ -51,7 +51,7 @@ namespace MedicXR_API.Context
 			});
 		}
 
-		public async Task<IEnumerable<Client>?> AuthenticateClient(string clientId, string clientSecret)
+		public async Task<Client?> AuthenticateClient(string clientId, string clientSecret)
 		{
 			SqlParameter[] parameters = new SqlParameter[2]
 			{
@@ -61,7 +61,7 @@ namespace MedicXR_API.Context
 
 			var clients = await Client.FromSqlRaw($"{SqlConstants.EXEC} {Schema}.{SqlConstants.sp_GetClient}", parameters).ToListAsync();
 
-			return clients;
+			return clients.FirstOrDefault();
 		}
 
 		public async Task<IEnumerable<User>> GetUsers(string clientId, string userIds)

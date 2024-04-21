@@ -6,10 +6,11 @@ using NUnit.Framework;
 using System.Security.Cryptography;
 using System.Net.Http.Headers;
 using MedicXR_API.Libraries;
+using MedicXR_API.Services.Athena;
 
 namespace UnitTests
 {
-	public class Tests
+    public class Tests
     {
         private MedicXRContext _ctx;
         private MedicXRService _svc;
@@ -24,16 +25,8 @@ namespace UnitTests
             _config = new ConfigurationBuilder().AddJsonFile("testsettings.json").AddEnvironmentVariables() 
                  .Build();
             _ctx = new MedicXRContext("Server=tcp:medicxr.database.windows.net,1433;Initial Catalog=medicxr;Persist Security Info=False;User ID=medicxr;Password=&)(^4081RPT123cj;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            _svc = new MedicXRService(_config);
             _athena = new AthenaEMRService(_config, new HttpLibrary());
-        }
-
-        [Test]
-        public async Task AuthenticateAthenaTest()
-        {
-            var authToken = await _athena.Authenticate();
-
-            Assert.Pass();
+            _svc = new MedicXRService(_config, _athena);
         }
 
         [Test]
@@ -45,9 +38,25 @@ namespace UnitTests
         }
 
         [Test]
+        public async Task GetProvidersTest()
+        {
+            await _athena.GetProviders("1128700");
+
+            Assert.Pass();
+        }
+
+        [Test]
         public async Task GetAppointmentsTest()
         {
-            var appointments = await _athena.GetAppointments(1128700, 1);
+            var appointments = await _athena.GetAppointments(1128700, 1, 1);
+
+            Assert.Pass();
+        }
+
+        [Test]
+        public async Task CreateAppointmentTest()
+        {
+            await _athena.CreateAppointment(1128700);
 
             Assert.Pass();
         }
@@ -56,6 +65,14 @@ namespace UnitTests
         public async Task GetPatientTest()
         {
             await _athena.GetPatient(1128700, 11281);
+
+            Assert.Pass();
+        }
+
+        [Test]
+        public async Task CreatePatientTest()
+        {
+            await _athena.CreatePatient(1128700);
 
             Assert.Pass();
         }

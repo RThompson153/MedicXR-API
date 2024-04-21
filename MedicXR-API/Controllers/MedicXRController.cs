@@ -1,11 +1,12 @@
 ﻿using MedicXR_API.Services;
+using MedicXR_API.Services.Athena;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Text.Json;
 
 namespace MedicXR_API.Controllers
 {
-	[ApiController]
+    [ApiController]
 	[Route("/")]
 	public class MedicXRController : ControllerBase
 	{
@@ -18,25 +19,11 @@ namespace MedicXR_API.Controllers
 		{
 			Salt = Convert.ToBase64String(Encoding.UTF8.GetBytes("medar")).Replace("=", "");
 			Config = config;
-			_svc = svc;
 			_athena = athena;
+			_svc = svc;
 		}
 
 		private string decode(string source) => Encoding.UTF8.GetString(Convert.FromBase64String(source));
-
-		[Route("authenticateathena")]
-		[HttpGet]
-		public async Task<string> AuthenticateAthena()
-		{
-			try
-			{
-				return JsonSerializer.Serialize(await _athena.Authenticate());
-			}
-			catch(Exception ex)
-			{
-				throw;
-			}
-		}
 
 		[Route("authenticateclient")]
 		[HttpGet]

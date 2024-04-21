@@ -8,7 +8,7 @@
 		internal const string Bearer = "Bearer";
 	}
 
-	internal enum HttpContentTypes
+	public enum HttpContentTypes
 	{
 		JSON, FormEncoded
 	}

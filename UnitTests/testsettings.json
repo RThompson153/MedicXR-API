@@ -31,7 +31,8 @@
     "TokenEndpoint": "token",
     "ChartEndpoint": "{practiceId}/chart/{patientId}/problems?departmentid={departmentId}",
     "ConditionsEndpoint": "fhir/r4/Condition",
-    "AppointmentsEndpoint": "v1/{practiceId}/appointments/booked?departmentid={departmentId}&startdate={startDate}&enddate={endDate}",
-    "PatientEndpoint":  "v1/{practiceId}/patients"
+    "AppointmentsEndpoint": "v1/{practiceId}/appointments",
+    "PatientsEndpoint": "v1/{practiceId}/patients",
+    "ProvidersEndpoint": "v1/{practiceId}/providers"
   }
 }
