@@ -3,6 +3,7 @@ using MedicXR_API.Context;
 using MedicXR_API.Context.Models;
 using MedicXR_API.Globals.Models;
 using MedicXR_API.Services.Athena;
+using MedicXR_API.Services.Athena.Models.Providers;
 using MedicXR_API.Services.Utils;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -46,9 +47,9 @@ namespace MedicXR_API.Services
 		{
 			try
 			{
-				var client = await authenticateClient(clientId, clientSecret);
+				Client client = await authenticateClient(clientId, clientSecret);
 
-				await _athena.GetProviders(client.PracticeId);
+				client.Providers = await _athena.GetProviders(client.PracticeId);
 
 				//if (client.Active != true && client.Registered == true)
 				//	throw new Exception("Client not active");

@@ -32,7 +32,7 @@ namespace UnitTests
         [Test]
         public async Task GetClientTest()
         {
-            await _svc.AuthenticateClient(_clientId, _clientSecret, "192.168.0.187");
+            var client = await _svc.AuthenticateClient(_clientId, _clientSecret, "192.168.0.187");
 
             Assert.Pass();
         }

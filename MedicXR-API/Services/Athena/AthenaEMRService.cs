@@ -6,6 +6,7 @@ using MedicXR_API.Services.Athena.Models.Patients;
 using MedicXR_API.Services.Models;
 using System.Net.Http.Headers;
 using System.Text;
+using MedicXR_API.Services.Athena.Models.Providers;
 
 namespace MedicXR_API.Services.Athena
 {
@@ -86,7 +87,7 @@ namespace MedicXR_API.Services.Athena
 
 		#region Public Methods
 		#region Providers
-        public async Task GetProviders(string practiceId)
+        public async Task<IEnumerable<Provider>?> GetProviders(string practiceId)
         {
             await authenticate();
 
@@ -94,9 +95,9 @@ namespace MedicXR_API.Services.Athena
 
             try
             {
-                var result = await _httpLibrary.GetAsync($"{_baseUrl}{endpoint}", addAuthenticationHeader());
+                ProviderList result = await _httpLibrary.GetAsync<ProviderList>($"{_baseUrl}{endpoint}", addAuthenticationHeader());
 
-                return;
+                return result.Providers;
             }
             catch (Exception ex)
             {
