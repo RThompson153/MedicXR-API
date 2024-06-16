@@ -7,6 +7,8 @@ using MedicXR_API.Services.Models;
 using System.Net.Http.Headers;
 using System.Text;
 using MedicXR_API.Services.Athena.Models.Providers;
+using System.Text.Json;
+using MedicXR_API.Services.Athena.Utils.Mappings;
 
 namespace MedicXR_API.Services.Athena
 {
@@ -116,15 +118,16 @@ namespace MedicXR_API.Services.Athena
         {
             await authenticate();
 
-            string date = DateTime.Now.ToShortDateString();
+            string startdate = DateTime.Now.ToShortDateString();
+            string enddate = DateTime.Now.AddDays(1).ToShortDateString();
 
             string endpoint = _appointmentsEndpoint.Replace("{practiceId}", practiceId.ToString());
 
             try
             {
-                AppointmentList result = await _httpLibrary.GetAsync<AppointmentList>($"{_baseUrl}{endpoint}/booked?departmentid={departmentId}&providerid={providerId}&startdate={date}&enddate={date}", addAuthenticationHeader());
+                AppointmentList result = await _httpLibrary.GetAsync<AppointmentList>($"{_baseUrl}{endpoint}/booked?departmentid={departmentId}&providerid={providerId}&startdate={startdate}&enddate={enddate}", addAuthenticationHeader());
 
-                return result?.Appointments;
+                return result?.Appointments.OrderBy(a => a.StartTime);
             }
             catch (Exception ex)
             {
@@ -132,54 +135,15 @@ namespace MedicXR_API.Services.Athena
             }
         }
 
-        /// <summary>
-        /// Creates a new appointment
-        /// </summary>
-        /// <param name="practiceId"></param>
-        /// <returns></returns>
-        public async Task CreateAppointment(int practiceId)
-        {
-            await authenticate();
-
-            string endpoint = _appointmentsEndpoint.Replace("{practiceId}", practiceId.ToString());
-
-            AppointmentDto appointment = new()
-            {
-                AppointmentDate = DateTime.Now.ToString("MM/dd/yyyy"),
-                AppointmentTime = DateTime.Now.AddHours(5).ToString("HH:mm"),
-                AppointmentTypeId = "103",
-                DepartmentId = "1",
-                ProviderId = "1",
-                ReasonId = "2"
-            };
-
-            try
-            {
-                var meh = appointment.ObjectToDictionary();
-
-                Dictionary<string, string> headers = new()
-                {
-                    {_authenticationToken.TokenType, _authenticationToken.AccessToken }
-                };
-
-                string newAppointment = await _httpLibrary.PostAsync($"{_baseUrl}{endpoint}/open", headers, meh);
-
-                return;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
         #endregion
         #region Patients
         /// <summary>
-        /// Retrieves basic patient infor for a provided patient id
+        /// Retrieves basic patient info for a provided patient id
         /// </summary>
         /// <param name="practiceId"></param>
         /// <param name="patientId"></param>
         /// <returns></returns>
-        public async Task<Patient?> GetPatient(int practiceId, int patientId)
+        public async Task<MedicXRPatient?> GetPatient(int practiceId, int patientId)
         {
             await authenticate();
 
@@ -189,48 +153,7 @@ namespace MedicXR_API.Services.Athena
             {
                 IEnumerable<Patient> result = await _httpLibrary.GetAsync<IEnumerable<Patient>>($"{_baseUrl}{endpoint}/{patientId}", addAuthenticationHeader());
 
-                return result?.FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        public async Task CreatePatient(int practiceId)
-        {
-            await authenticate();
-
-            var endpoint = _patientEndpoint.Replace("{practiceId}", practiceId.ToString());
-
-            PatientDto patient = new()
-            {
-                DepartmentId = "1",
-                FirstName = "Test",
-                LastName = "Patient",
-                DOB = "01/12/1984",
-                Sex = "M",
-                Email = "",
-                GuarantorEmail = "",
-                SSN = "",
-                HomePhone = "",
-                MobilePhone = "",
-                WorkPhone = "",
-                Zip = "32504"
-            };
-
-            try
-            {
-                var meh = patient.ObjectToDictionary();
-
-                Dictionary<string, string> headers = new()
-                {
-                    {_authenticationToken.TokenType, _authenticationToken.AccessToken }
-                };
-
-                string newPatient = await _httpLibrary.PostAsync($"{_baseUrl}{endpoint}", headers, meh);
-
-                return;
+                return result?.FirstOrDefault().MapToMedicXRPatient();
             }
             catch (Exception ex)
             {

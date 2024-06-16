@@ -10,5 +10,6 @@
         internal const string Grant_Type = "grant_type";
         internal const string GrantType = "GrantType";
         internal const string ApplicationJson = "application/json";
+        internal const string ApplicationFormEncoded = "application/x-www-form-urlencoded";
     }
 }

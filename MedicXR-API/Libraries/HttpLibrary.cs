@@ -123,5 +123,23 @@ namespace MedicXR_API.Libraries
 				throw;
 			}
 		}
+
+		public async Task<string> PutAsync(string url, Dictionary<string, string> headers, Dictionary<string, string> content)
+		{
+			try
+			{
+				setHttpHeaders(headers);
+
+				HttpResponseMessage response = await _httpClient.PutAsync(url, setHttpContent(content));
+
+				assertResponseException(response);
+
+				return response.Content.ReadAsStringAsync().Result;
+			}
+			catch
+			{
+				throw;
+			}
+		}
 	}
 }

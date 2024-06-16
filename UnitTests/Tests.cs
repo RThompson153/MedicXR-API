@@ -40,7 +40,9 @@ namespace UnitTests
         [Test]
         public async Task GetProvidersTest()
         {
-            await _athena.GetProviders("1128700");
+            var providers = await _athena.GetProviders("1128700");
+
+            var meh = providers.OrderBy(p => p.Id).Select(p => p.Id);
 
             Assert.Pass();
         }
@@ -48,31 +50,18 @@ namespace UnitTests
         [Test]
         public async Task GetAppointmentsTest()
         {
-            var appointments = await _athena.GetAppointments(1128700, 1, 1);
+            var appointments = await _athena.GetAppointments(1128700, 1, 2);
 
             Assert.Pass();
         }
 
         [Test]
-        public async Task CreateAppointmentTest()
+        public async Task LoadAppointmentTest()
         {
-            await _athena.CreateAppointment(1128700);
+            var practiceId = 1128700;
+            var appointments = await _athena.GetAppointments(practiceId, 1, 2);
 
-            Assert.Pass();
-        }
-
-        [Test]
-        public async Task GetPatientTest()
-        {
-            await _athena.GetPatient(1128700, 11281);
-
-            Assert.Pass();
-        }
-
-        [Test]
-        public async Task CreatePatientTest()
-        {
-            await _athena.CreatePatient(1128700);
+            var patient = await _athena.GetPatient(practiceId, int.Parse(appointments.FirstOrDefault().PatientId));
 
             Assert.Pass();
         }
