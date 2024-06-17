@@ -14,7 +14,9 @@ namespace UnitTests
     {
         private MedicXRContext _ctx;
         private MedicXRService _svc;
-        private AthenaEMRService _athena;
+        private ProviderService _providerService;
+        private PatientService _patientService;
+        private AppointmentService _appointmentService;
         private IConfiguration _config;
         private string _clientId = "RGV2ZWxvcG1lbnQgQ2xpZW50";
         private string _clientSecret = "F7CzIZPBYmQsDeQAVDxC-Gmt61pBvvF1XH4oPzwHrib5Tsh4_0BXESyDWdXdP5bcNSVs7DREGA2oHOzaEWHSGQ";
@@ -25,8 +27,10 @@ namespace UnitTests
             _config = new ConfigurationBuilder().AddJsonFile("testsettings.json").AddEnvironmentVariables() 
                  .Build();
             _ctx = new MedicXRContext("Server=tcp:medicxr.database.windows.net,1433;Initial Catalog=medicxr;Persist Security Info=False;User ID=medicxr;Password=&)(^4081RPT123cj;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            _athena = new AthenaEMRService(_config, new HttpLibrary());
-            _svc = new MedicXRService(_config, _athena);
+            //_athena = new AthenaService(_config, new HttpLibrary());
+            _appointmentService = new(_config, new HttpLibrary());
+            _patientService = new(_config, new HttpLibrary());
+            _svc = new MedicXRService(_config, _providerService);
         }
 
         [Test]
@@ -40,7 +44,7 @@ namespace UnitTests
         [Test]
         public async Task GetProvidersTest()
         {
-            var providers = await _athena.GetProviders("1128700");
+            var providers = await _providerService.GetProviders("1128700");
 
             var meh = providers.OrderBy(p => p.Id).Select(p => p.Id);
 
@@ -50,7 +54,7 @@ namespace UnitTests
         [Test]
         public async Task GetAppointmentsTest()
         {
-            var appointments = await _athena.GetAppointments(1128700, 1, 2);
+            var appointments = await _appointmentService.GetAppointments(1128700, 1, 2);
 
             Assert.Pass();
         }
@@ -59,20 +63,17 @@ namespace UnitTests
         public async Task LoadAppointmentTest()
         {
             var practiceId = 1128700;
-            var appointments = await _athena.GetAppointments(practiceId, 1, 2);
+            var appointments = await _appointmentService.GetAppointments(practiceId, 1, 2);
 
-            var patient = await _athena.GetPatient(practiceId, int.Parse(appointments.FirstOrDefault().PatientId));
+            var patient = await _patientService.GetPatient(practiceId, int.Parse(appointments.FirstOrDefault().PatientId));
+
+            //Get Patient allergies from chart
+            //Get Patient problems from chart
+            //Get Patient medical history from chart
+            //Get Patient family history from chart
 
             Assert.Pass();
         }
-
-        [Test]
-        public async Task GetConditionsTest()
-        {
-            await _athena.GetConditions();
-
-            Assert.Pass();
-        }        
 
         [Test]
         public void createapikey()

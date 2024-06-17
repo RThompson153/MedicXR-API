@@ -11,11 +11,11 @@ namespace MedicXR_API.Controllers
 	public class MedicXRController : ControllerBase
 	{
 		private MedicXRService _svc;
-		private AthenaEMRService _athena;
+		private AthenaService _athena;
 		protected internal IConfiguration Config;
 		protected internal readonly string Salt;
 		
-		public MedicXRController(IConfiguration config, MedicXRService svc, AthenaEMRService athena)
+		public MedicXRController(IConfiguration config, MedicXRService svc, AthenaService athena)
 		{
 			Salt = Convert.ToBase64String(Encoding.UTF8.GetBytes("medar")).Replace("=", "");
 			Config = config;

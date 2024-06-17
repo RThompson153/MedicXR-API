@@ -63,7 +63,7 @@ namespace MedicXR_API.Libraries
 
 				return JsonSerializer.Deserialize<T>(response.Content.ReadAsStringAsync().Result);
 			}
-			catch
+			catch(Exception ex)
 			{
 				throw;
 			}

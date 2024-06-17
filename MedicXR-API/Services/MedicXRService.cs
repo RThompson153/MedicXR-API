@@ -15,9 +15,9 @@ namespace MedicXR_API.Services
 	{
 		private IConfiguration _config;
 		private readonly MedicXRContext _ctx;
-		private AthenaEMRService _athena;
+		private ProviderService _athena;
 		
-		public MedicXRService(IConfiguration config, AthenaEMRService athena)
+		public MedicXRService(IConfiguration config, ProviderService athena)
 		{
 			_config = config;
 			_athena = athena;

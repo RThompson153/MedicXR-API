@@ -2,31 +2,26 @@
 {
     internal static class AthenaConstants
     {
-		#region Settings
         internal const string AthenaEmr = "AthenaEMR";
         internal const string BaseUrl = "BaseUrl";
-        internal const string AuthorizationEndpoint = "AuthorizationEndpoint";
-        internal const string TokenEndpoint = "TokenEndpoint";
+        internal const string Services = "Services";
+        internal const string AuthorizationEndpoint = "AuthorizationService";
+        internal const string TokenEndpoint = "TokenService";
         internal const string ChartEndpoint = "ChartEndpoint";
-        internal const string ConditionsEndpoint = "ConditionsEndpoint";
-        internal const string AppointmentsEndpoint = "AppointmentsEndpoint";
-        internal const string PatientsEndpoint = "PatientsEndpoint";
-        internal const string ProvidersEndpoint = "ProvidersEndpoint";
-		#endregion
-		#region Scopes
-        internal const string AthenaScope = "Athena";
-        internal const string ConditionsScope = "Condition";
-        #endregion
-		#region Appointments
+        internal const string AppointmentsEndpoint = "AppointmentsService";
+        internal const string PatientsEndpoint = "PatientsService";
+        internal const string ProvidersEndpoint = "ProvidersService";
+        internal const string Scopes = "Scopes";
+		#region Service Parameters
 		internal const string AppointmentDate = "appointmentdate";
         internal const string AppointmentTime = "appointmenttime";
         internal const string AppointmentTypeId = "appointmenttypeid";
-        internal const string DepartmentId = "departmentid";
-        internal const string ProviderId = "providerid";
+        internal const string PracticeId = "{practiceId}";
+        internal const string DepartmentId = "{departmentId}";
+        internal const string ProviderId = "{providerId}";
+        internal const string StartDate = "{startDate}";
+        internal const string EndDate = "{endDate}";
         internal const string ReasonId = "reasonid";
-        #endregion
-
-        #region Patients
         #endregion
     }
 }

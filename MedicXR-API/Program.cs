@@ -9,7 +9,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<HttpLibrary>();
-builder.Services.AddSingleton<AthenaEMRService>();
+builder.Services.AddSingleton<AppointmentService>();
+builder.Services.AddSingleton<PatientService>();
 builder.Services.AddSingleton<MedicXRService>();
 
 var app = builder.Build();

@@ -13,26 +13,17 @@
     "Database": "Data Source=localhost;Initial Catalog=MedicXR;Integrated Security=True;Encrypt=False;"
   },
   "AthenaEMR": {
+    "BaseUrl": "https://api.preview.platform.athenahealth.com/",
     "ClientId": "0oaodii4koJhF1HYE297",
     "ClientSecret": "As2XvgBGePFSIcJpFl1Tfpu_UyF0t4yMWfmz5AyL56oSYDsImbjzTcoNidpCnPnG",
     "GrantType": "client_credentials",
-    "Scopes": {
-      "Athena": "athena/service/Athenanet.MDP.*",
-      "Condition": "system/Condition.read"
-    },
+    "Scopes": "athena/service/Athenanet.MDP.*",
     "Services": {
       "AuthorizationService": "oauth2/v1/",
       "TokenService": "token",
       "AppointmentsService": "v1/{practiceId}/appointments/booked?departmentid={departmentId}&startdate={startDate}&enddate={endDate}",
-      "PatientsService": "v1/{practiceId}/patients"
-    },
-    "BaseUrl": "https://api.preview.platform.athenahealth.com/",
-    "AuthorizationEndpoint": "oauth2/v1/",
-    "TokenEndpoint": "token",
-    "ChartEndpoint": "{practiceId}/chart/{patientId}/problems?departmentid={departmentId}",
-    "ConditionsEndpoint": "fhir/r4/Condition",
-    "AppointmentsEndpoint": "v1/{practiceId}/appointments",
-    "PatientsEndpoint": "v1/{practiceId}/patients",
-    "ProvidersEndpoint": "v1/{practiceId}/providers"
+      "PatientsService": "v1/{practiceId}/patients",
+      "ProvidersService": "v1/{practiceId}/providers"
+    }
   }
 }
