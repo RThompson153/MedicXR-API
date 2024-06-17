@@ -15,21 +15,23 @@ namespace MedicXR_API.Services.Athena
 {
 	public abstract class AthenaService
     {
-        private readonly IConfiguration _config;
-        private readonly IConfigurationSection _emrSection, _scopesSection;
-        private AuthToken _authenticationToken;
-        
-        private readonly string _authenticationEndpoint, _tokenEndpoint, _chartEndpoint, _clientId, _clientSecret, _grantType, _athenaScope;
+		#region Private Fields
+		private readonly string _authenticationEndpoint, _tokenEndpoint, _clientId, _clientSecret, _grantType;
         private readonly Dictionary<string, string> _httpHeaders;
-
-        protected readonly string BaseUrl;
+		#endregion
+		#region Protected Fields
+		protected readonly string BaseUrl;
         protected readonly IConfigurationSection Section, Services;
         protected readonly HttpLibrary HttpLibrary;
-        protected string Scopes;
+        protected readonly string Scopes;
+		#endregion
 
-        public AthenaService(IConfiguration config, HttpLibrary httpClient)
+		#region Private Properties
+        private AuthToken authenticationToken { get; set; }
+        #endregion
+
+		public AthenaService(IConfiguration config, HttpLibrary httpClient)
         {
-            _config = config;
             HttpLibrary = httpClient;
             Section = config.GetSection(AthenaConstants.AthenaEmr);
             BaseUrl = Section.GetValue<string>(AthenaConstants.BaseUrl);
@@ -55,7 +57,7 @@ namespace MedicXR_API.Services.Athena
         {
             Dictionary<string, string> headers = _httpHeaders;
 
-            headers.Add(_authenticationToken.TokenType, _authenticationToken.AccessToken);
+            headers.Add(authenticationToken.TokenType, authenticationToken.AccessToken);
 
             return headers;
         }
@@ -64,17 +66,17 @@ namespace MedicXR_API.Services.Athena
         {
             try
             {
-                if (_authenticationToken is not null && !_authenticationToken.Expired)
-                    return _authenticationToken;
+                if (authenticationToken is not null && !authenticationToken.Expired)
+                    return authenticationToken;
 
                 Dictionary<string, string> headers = new()
                 {
                     { HttpConstants.Basic, Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_clientId}:{_clientSecret}"))}
                 };
 
-                _authenticationToken = await HttpLibrary.PostAsync<AuthToken>($"{BaseUrl}{_authenticationEndpoint}{_tokenEndpoint}", headers, _httpHeaders);
+                authenticationToken = await HttpLibrary.PostAsync<AuthToken>($"{BaseUrl}{_authenticationEndpoint}{_tokenEndpoint}", headers, _httpHeaders);
 
-                return _authenticationToken;
+                return authenticationToken;
             }
             catch (Exception ex)
             {

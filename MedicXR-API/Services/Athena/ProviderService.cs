@@ -20,7 +20,7 @@ namespace MedicXR_API.Services.Athena
         {
             await Authenticate();
 
-            string endpoint = _endpoint.Replace("{practiceId}", practiceId);
+            string endpoint = _endpoint.Replace(AthenaConstants.PracticeId, practiceId);
 
             try
             {
