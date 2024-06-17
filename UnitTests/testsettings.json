@@ -23,7 +23,8 @@
       "TokenService": "token",
       "AppointmentsService": "v1/{practiceId}/appointments/booked?departmentid={departmentId}&startdate={startDate}&enddate={endDate}",
       "PatientsService": "v1/{practiceId}/patients",
-      "ProvidersService": "v1/{practiceId}/providers"
+      "ProvidersService": "v1/{practiceId}/providers",
+      "ChartService": "v1/{practiceId}/chart/{patientId}/problems?departmentid={departmentId}"
     }
   }
 }

@@ -17,6 +17,7 @@ namespace UnitTests
         private ProviderService _providerService;
         private PatientService _patientService;
         private AppointmentService _appointmentService;
+        private ChartService _chartService;
         private IConfiguration _config;
         private string _clientId = "RGV2ZWxvcG1lbnQgQ2xpZW50";
         private string _clientSecret = "F7CzIZPBYmQsDeQAVDxC-Gmt61pBvvF1XH4oPzwHrib5Tsh4_0BXESyDWdXdP5bcNSVs7DREGA2oHOzaEWHSGQ";
@@ -27,9 +28,10 @@ namespace UnitTests
             _config = new ConfigurationBuilder().AddJsonFile("testsettings.json").AddEnvironmentVariables() 
                  .Build();
             _ctx = new MedicXRContext("Server=tcp:medicxr.database.windows.net,1433;Initial Catalog=medicxr;Persist Security Info=False;User ID=medicxr;Password=&)(^4081RPT123cj;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            //_athena = new AthenaService(_config, new HttpLibrary());
+            _providerService = new(_config, new HttpLibrary());
             _appointmentService = new(_config, new HttpLibrary());
             _patientService = new(_config, new HttpLibrary());
+            _chartService = new(_config, new HttpLibrary());
             _svc = new MedicXRService(_config, _providerService);
         }
 
@@ -63,12 +65,14 @@ namespace UnitTests
         public async Task LoadAppointmentTest()
         {
             var practiceId = 1128700;
-            var appointments = await _appointmentService.GetAppointments(practiceId, 1, 2);
+            var departmentId = 1;
+            var appointments = await _appointmentService.GetAppointments(practiceId, departmentId, 2);
 
             var patient = await _patientService.GetPatient(practiceId, int.Parse(appointments.FirstOrDefault().PatientId));
 
             //Get Patient allergies from chart
             //Get Patient problems from chart
+            var problems = await _chartService.GetProblemList(practiceId, departmentId, int.Parse(patient.EmrId));
             //Get Patient medical history from chart
             //Get Patient family history from chart
 

@@ -84,8 +84,5 @@ namespace MedicXR_API.Services.Athena
             }
         }
 		#endregion
-
-		#region Public Methods
-        #endregion
     }
 }
